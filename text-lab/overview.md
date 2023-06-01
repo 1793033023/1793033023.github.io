@@ -1,3 +1,7 @@
+---
+html:
+    toc: true
+---
 # Creating a TiDB Cluster for Testing Purposes
 
 ### Overview
