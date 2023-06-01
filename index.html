@@ -1,1 +1,370 @@
-<h1>hello</h1>
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Exercises 1&colon; Create a TiDB Cluster</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="exercises-1-create-a-tidb-cluster">Exercises 1: Create a TiDB Cluster</h1>
+<h3 id="overview">Overview</h3>
+<ul>
+<li>In these exercises, you create a TiDB cluster using either the <code>TiUP Playground</code> on your laptop or the TiDB Cloud Serverless Tier.</li>
+<li>Both cluster types are designed for testing purposes and are helpful in enabling developers to better understand the TiDB interfaces at no additional cost.</li>
+</ul>
+<h3 id="notes">Notes</h3>
+<ul>
+<li>Some of the steps require that you type commands in two different terminal windows. You might find it convenient to launch two terminals and keep them open for the duration of the exercises.</li>
+<li>Your environment may be different with these exercises, including but not limited to <code>IP address</code>, <code>port number</code>, <code>username</code>, <code>password</code>, <code>directory</code> and the estimated eslapsed time for exercise scripts.</li>
+<li>The <code>$</code> in your terminal window is OS prompt.</li>
+<li>The &quot;<code>tidb&gt;</code>&quot; or &quot;<code>mysql&gt;</code>&quot; in your terminal window is SQL command prompt.</li>
+<li>These exercises can be run on a single machine, such as your laptop.</li>
+<li>These exercises are designed for <code>TiUP Playground</code> and TiDB Cloud Serverless Tier. It is crucial to note that they must not be utilized for production purposes.</li>
+</ul>
+<h3 id="assumptions">Assumptions</h3>
+<ul>
+<li>You are using macOS or Linux.</li>
+<li>You have <a href="https://git-scm.com/">git</a> installed.</li>
+<li>You have <code>mysql</code> command line client installed.</li>
+</ul>
+<h2 id="exercise-1-1-create-a-tidb-cluster-using-tiup-playground">Exercise 1-1: Create a TiDB Cluster Using TiUP Playground</h2>
+  <img src="file:////Users/zhanghao/tidb-course-201/lab-guide/guide/en/201.3/diagram/2013E011_aa_001_20230404.png" width="60%" align="top"/>
+<h3 id="overview-1">Overview</h3>
+<ul>
+<li>In this exercise, you create a TiDB cluster using <code>TiUP Playground</code>.</li>
+</ul>
+<h3 id="duration">Duration</h3>
+<ul>
+<li>This exercise should take you approximately 10 minutes to complete.</li>
+</ul>
+<h3 id="tasks">Tasks</h3>
+<ol>
+<li>Clone the workshop scripts repository.</li>
+<li>Check and understand the demo scripts.</li>
+<li>Create a TiUP Playground TiDB sandbox cluster.</li>
+<li>Understand how to clean up TiUP Playground sandbox cluster.</li>
+</ol>
+<h3 id="solutions">Solutions</h3>
+<ol>
+<li>
+<p>Clone the demo repository from <code>GitHub</code>, and receive the results shown.</p>
+<pre><code>$ git clone https://github.com/pingcap/tidb-course-201-lab.git
+Cloning into 'tidb-course-201-lab'...
+...
+</code></pre>
+</li>
+<li>
+<p>Change the current working directory to <code>scripts/</code> and verify two scripts.</p>
+<p>Change the working directory to <code>tidb-course-201-lab/scripts</code>.</p>
+<pre><code>$ cd tidb-course-201-lab/scripts
+</code></pre>
+<p>Review the script <code>playground-start.sh</code>, as running it will initiate a TiDB Playground cluster with 10 instances (3 PD server instances, 3 TiKV server instances, 3 TiDB server instances, and 1 TiFlash server instance). And, the directory tag for the Playground is <code>classroom</code>.</p>
+<pre><code>$ cat playground-start.sh 
+#!/bin/bash
+~/.tiup/bin/tiup playground v6.5.1 --tag classroom --db 3 --pd 3 --kv 3 --tiflash 1
+</code></pre>
+<p>Review the script <code>playground-check.sh</code>, which displays the simplified status of instances for the TiDB Playground cluster.</p>
+<pre><code>$ cat playground-check.sh
+#!/bin/bash
+~/.tiup/bin/tiup playground display
+</code></pre>
+</li>
+<li>
+<p>Launch a TiDB Playground cluster and establish a connection to the TiDB server instance within the cluster.</p>
+<p>Download and install TiUP utility, and receive the results shown.</p>
+<pre><code>$ curl --proto '=https' --tlsv1.2 -sSf https://tiup-mirrors.pingcap.com/install.sh | sh
+...
+Shell profile:  /Users/username/.zshrc
+Installed path: /Users/username/.tiup/bin/tiup
+===============================================
+Have a try:     tiup playground
+===============================================
+</code></pre>
+<p>Launch a local TiDB Playground cluster using the provided script and view the results. If you enter <code>Ctrl + C</code>, your Playground cluster will exit.</p>
+<pre><code>$ ./playground-start.sh
+...
+To view the dashboard: http://127.0.0.1:2379/dashboard
+PD client endpoints: [127.0.0.1:2379 127.0.0.1:2382 127.0.0.1:2384]
+To view the Prometheus: http://127.0.0.1:9090
+To view the Grafana: http://127.0.0.1:3000
+</code></pre>
+<p>Open a new terminal window to verify the status of the TiDB Playground cluster and display the resulting information.</p>
+<pre><code>$ cd tidb-course-201-lab/scripts
+$ ./playground-check.sh
+tiup is checking updates for component playground ...
+Starting component `playground`: /Users/username/.tiup/components/playground/v1.11.0/tiup-playground display
+Pid    Role     Uptime
+---    ----     ------
+11473  pd       3m4.584159125s
+11474  pd       3m4.563855125s
+11475  pd       3m4.550561s
+11476  tikv     3m3.560119667s
+11477  tikv     3m3.540240667s
+11478  tikv     3m3.52733175s
+11480  tidb     3m2.545229042s
+11481  tidb     3m2.533429333s
+11482  tidb     3m2.519047917s
+11502  tiflash  2m54.914668834s
+</code></pre>
+<p>Establish the connection to TiDB server instance on port 4000 as user <code>root</code>.</p>
+<pre><code>$ cat connect-4000.sh 
+#!/bin/bash
+
+export MYSQL_PS1=&quot;tidb:4000&gt; &quot;
+
+mysql -h 127.0.0.1 -P 4000 -u root
+</code></pre>
+<pre><code>$ ./connect-4000.sh 
+...
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+tidb:4000&gt;
+</code></pre>
+<p>Run a simple query, the result you obtain may differ from the output.</p>
+<pre><code class="language-sql"><span class="hljs-keyword">SELECT</span> TIDB_VERSION()\G
+</code></pre>
+<pre><code>tidb:4000&gt; SELECT TIDB_VERSION()\G
+*************************** 1. row ***************************
+TIDB_VERSION(): Release Version: v6.5.1
+Edition: Community
+Git Commit Hash: 4084b077d615f9dc0a41cf2e30bc6e1a02332df2
+Git Branch: heads/refs/tags/v6.5.1
+UTC Build Time: 2023-03-07 16:04:47
+GoVersion: go1.19.5
+Race Enabled: false
+TiKV Min Version: 6.2.0-alpha
+Check Table Before Drop: false
+Store: tikv
+1 row in set (0.00 sec)
+</code></pre>
+<p>Close the connection.</p>
+<pre><code>tidb:4000&gt; exit;
+Bye
+</code></pre>
+<p>Verify the <code>classroom</code> directory as it contains the complete file structure of your TiDB Playground cluster.</p>
+<pre><code>$ find ~/.tiup/data/classroom -maxdepth 1
+/Users/username/.tiup/data/classroom
+/Users/username/.tiup/data/classroom/tikv-0
+/Users/username/.tiup/data/classroom/tikv-1
+/Users/username/.tiup/data/classroom/pd-1
+/Users/username/.tiup/data/classroom/pd-0
+/Users/username/.tiup/data/classroom/tidb-2
+/Users/username/.tiup/data/classroom/grafana
+/Users/username/.tiup/data/classroom/dsn
+/Users/username/.tiup/data/classroom/tiup_process_meta
+/Users/username/.tiup/data/classroom/tikv-2
+/Users/username/.tiup/data/classroom/pd-2
+/Users/username/.tiup/data/classroom/prometheus
+/Users/username/.tiup/data/classroom/port
+/Users/username/.tiup/data/classroom/tidb-1
+/Users/username/.tiup/data/classroom/tiflash-0
+/Users/username/.tiup/data/classroom/tidb-0
+</code></pre>
+</li>
+<li>
+<p>(optional) If you need to clean up the TiDB Playground cluster, you can do so.</p>
+<p>Go to the terminal where you previously ran <code>playground-start.sh</code>. The screen might look like this.</p>
+<pre><code>...
+CLUSTER START SUCCESSFULLY, Enjoy it ^-^
+...
+To view the dashboard: http://127.0.0.1:2379/dashboard
+PD client endpoints: [127.0.0.1:2379 127.0.0.1:2382 127.0.0.1:2384]
+To view the Prometheus: http://127.0.0.1:9090
+To view the Grafana: http://127.0.0.1:3000
+</code></pre>
+<p>Press <code>Ctrl + C</code> once to abort the TiDB Playground cluster. All PD, TiKV, TiDB, and TiFlash server instances will be terminated.</p>
+<pre><code>^CPlayground receive signal:  interrupt
+Got signal interrupt (Component: playground ; PID: 47472)
+Wait grafana(47504) to quit...
+Wait prometheus(47494) to quit...
+Grafana quit
+Wait ng-monitoring(47495) to quit...
+Wait tiflash(47505) to quit...
+Wait tidb(47479) to quit...
+tiflash quit
+prometheus quit
+pd quit
+pd quit
+ng-monitoring quit
+Wait tidb(47480) to quit...
+tidb quit
+pd quit
+tidb quit
+Wait tidb(47481) to quit...
+tidb quit
+Wait tikv(47476) to quit...
+tikv quit
+Wait tikv(47477) to quit...
+tikv quit
+Wait tikv(47478) to quit...
+Wait pd(47473) to quit...
+Wait pd(47474) to quit...
+Wait pd(47475) to quit...
+tikv quit
+</code></pre>
+<p>To delete all the Playground files that have a prefix of <code>classroom</code> in their tag, execute the command <code>tiup clean classroom</code>.</p>
+<pre><code>$ ~/.tiup/bin/tiup clean classroom
+Clean instance of `playground`, directory: /Users/username/.tiup/data/classroom
+</code></pre>
+</li>
+</ol>
+<h2 id="exercise-1-2-create-a-tidb-cluster-using-tidb-cloud-serverless-tier">Exercise 1-2: Create a TiDB Cluster Using TiDB Cloud Serverless Tier</h2>
+  <img src="file:////Users/zhanghao/tidb-course-201/lab-guide/guide/en/201.3/diagram/2013E012_aa_001_20230404.png" width="60%" align="top"/>
+<h3 id="overview-2">Overview</h3>
+<ul>
+<li>In this exercise, you will create a TiDB cluster by using the TiDB Cloud Serverless Tier.</li>
+</ul>
+<h3 id="duration-1">Duration</h3>
+<ul>
+<li>This exercise should take you approximately 10 minutes to complete.</li>
+</ul>
+<h3 id="tasks-1">Tasks</h3>
+<ol>
+<li>Create a TiDB Serverless Tier (beta) cluster on TiDB Cloud.</li>
+</ol>
+<h3 id="solutions-1">Solutions</h3>
+<ol>
+<li>
+<p>Create a TiDB Serverless Tier (beta) cluster on TiDB Cloud.</p>
+<p>Create Serverless Tier cluster by following the Exercise 1-1, Exercise 1-2 and Exercise 2-1 in <a href="https://eng.edu.pingcap.com/catalog/info/id:204">TiDB Cloud Kickstart Workshop</a></p>
+</li>
+<li>
+<p>Connect to TiDB Cloud Serverless Tier (beta) cluster.
+Change the working directory to <code>scripts/</code>.</p>
+<pre><code>$ cd tidb-course-201-lab/scripts
+</code></pre>
+<p>Obtain the following details from the TiDB Cloud console: <code>HOST</code>, <code>USERNAME</code>, <code>PORT</code>, and <code>PASSWORD</code>. To retrieve this information, click the <code>Connect</code> button on the <code>Overview</code> page of the cluster you want to connect to, then locate the <code>Connect to {cluster_name}</code> popup window. If you are unaware of your password, please click on the <code>Reset Password</code> button located below and copy the newly generated password.</p>
+   <img src="file:////Users/zhanghao/tidb-course-201/lab-guide/guide/en/201.3/diagram/ServerlessConnectMySQLCLI_aa_001_20230112.png" width="50%" align="top"/>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Options On Screenshot</th>
+<th style="text-align:left">Placeholders In The Guide</th>
+<th style="text-align:left">Mapping To Variables for this Step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>-h</code></td>
+<td style="text-align:left"><code>&lt;hostname&gt;</code></td>
+<td style="text-align:left"><code>TIDB_CLOUD_HOST</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>-u</code></td>
+<td style="text-align:left"><code>&lt;username&gt;</code></td>
+<td style="text-align:left"><code>TIDB_CLOUD_USERNAME</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>-P</code></td>
+<td style="text-align:left"><code>&lt;port&gt;</code></td>
+<td style="text-align:left"><code>TIDB_CLOUD_PORT</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><code>-p</code></td>
+<td style="text-align:left"><code>&lt;username&gt;</code></td>
+<td style="text-align:left"><code>TIDB_CLOUD_PASSWORD</code></td>
+</tr>
+</tbody>
+</table>
+<p>To use TiDB Cloud Serverless Tier in subsequent steps and exercises, set the environment variables in your terminal, which will be required by certain scripts.</p>
+<pre><code>$ export TIDB_CLOUD_HOST=&lt;hostname&gt; 
+$ export TIDB_CLOUD_USERNAME=&lt;username&gt;
+$ export TIDB_CLOUD_PASSWORD=&lt;password&gt;
+$ export TIDB_CLOUD_PORT=&lt;port&gt;
+</code></pre>
+<p>Verify that the four required environment variables for the exercise have been set in the current terminal. If any of these variables were not properly set, you may need to review the previous step.</p>
+<pre><code>$ echo $TIDB_CLOUD_HOST; echo $TIDB_CLOUD_USERNAME; echo $TIDB_CLOUD_PASSWORD; echo $TIDB_CLOUD_PORT;
+gateway01.us-west-2.prod.aws.tidbcloud.com
+4▧▧▧▧▧▧▧▧▧▧▧▧▧▧.root
+U▧▧▧▧▧▧▧▧▧▧▧▧▧▧E
+4000
+</code></pre>
+<p>Review the connection script, taking note that TiDB Cloud only accepts TLS connections. Ensure that the <code>--ssl-ca</code> option is functional on your operating system.</p>
+<pre><code>$ cat connect-cloud.sh 
+#!/bin/bash
+
+export MYSQL_PS1=&quot;tidb-cloud&gt; &quot;
+
+# Default `--ssl-ca` option is for macOS/Alpine. For other system, please modify the `--ssl-ca` option respectively.
+# Debian/Unbuntu/Arch: --ssl-ca=/etc/ssl/certs/ca-certificates.crt
+# CentOS/RedHat/Fedora: --ssl-ca=/etc/pki/tls/certs/ca-bundle.crt
+# OpenSUSE: --ssl-ca=/etc/ssl/ca-bundle.pem
+
+mysql --connect-timeout 15 \
+  -u $TIDB_CLOUD_USERNAME \
+  -h $TIDB_CLOUD_HOST \
+  -P 4000 \
+  --ssl-mode=VERIFY_IDENTITY \
+  --ssl-ca=/etc/ssl/cert.pem \
+  -p$TIDB_CLOUD_PASSWORD
+</code></pre>
+<p>To connect to the TiDB Cloud Serverless Tier, execute the <code>connect-cloud.sh</code> script.</p>
+<pre><code>$ ./connect-cloud.sh
+mysql: [Warning] Using a password on the command line interface can be insecure.
+...
+tidb-cloud&gt; 
+</code></pre>
+<p>Run a simple query, the result you obtain may differ from the output.</p>
+<pre><code class="language-sql"><span class="hljs-keyword">SELECT</span> TIDB_VERSION()\G
+</code></pre>
+<pre><code>tidb-cloud&gt; SELECT TIDB_VERSION()\G
+*************************** 1. row ***************************
+TIDB_VERSION(): Release Version: v6.4.0-serverless
+Edition: Community
+Git Commit Hash: 549b9399024104836a32a268de7adbaf56ea596e
+Git Branch: release-6.4-serverless
+UTC Build Time: 2023-01-03 06:18:02
+GoVersion: go1.19.4
+Race Enabled: false
+TiKV Min Version: 6.1.0
+Check Table Before Drop: false
+Store: tikv
+1 row in set (0.19 sec)
+</code></pre>
+<p>Close the connection.</p>
+<pre><code>tidb-cloud&gt; exit;
+Bye
+</code></pre>
+</li>
+</ol>
+<h2 id="end-of-exercises-1">End of Exercises 1</h2>
+
+        <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </body>
+    </html>
