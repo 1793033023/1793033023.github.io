@@ -302,5 +302,4 @@
       Writing history-file /Users/username/.mysql_history
       Bye
       ```
-
-## End of Exercises
+<a href="../index.md">Back to Catalog</a>
